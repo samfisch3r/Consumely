@@ -1,0 +1,79 @@
+<resources>
+    <string name="app_name">Consumely</string>
+
+    <!-- Navigation -->
+    <string name="nav_inventory">Vorrat</string>
+    <string name="nav_add_item">Artikel hinzufügen</string>
+    <string name="nav_edit_item">Artikel bearbeiten</string>
+    <string name="nav_settings">Einstellungen</string>
+    <string name="nav_scanner">Barcodescanner</string>
+
+    <!-- Default Locations -->
+    <string name="location_all">Alle</string>
+    <string name="location_pantry">Vorratskammer</string>
+    <string name="location_fridge">Kühlschrank</string>
+    <string name="location_freezer">Gefrierschrank</string>
+    <string name="location_basement">Keller</string>
+
+    <!-- Location Types -->
+    <string name="location_type_pantry">Vorratskammer / Raumtemp.</string>
+    <string name="location_type_fridge">Kühlschrank</string>
+    <string name="location_type_freezer">Gefrierschrank</string>
+
+    <!-- Item Fields -->
+    <string name="label_item_name">Artikelname</string>
+    <string name="label_location">Standort</string>
+    <string name="label_quantity">Menge</string>
+    <string name="label_expiry_date">Ablaufdatum</string>
+    <string name="label_optional_expiry">Ablaufdatum (Optional)</string>
+    <string name="label_date_added">Hinzugefügt am</string>
+    <string name="label_barcode">Barcode</string>
+
+    <!-- Actions -->
+    <string name="btn_save">Speichern</string>
+    <string name="btn_cancel">Abbrechen</string>
+    <string name="btn_delete">Löschen</string>
+    <string name="btn_scan_barcode">Barcode scannen</string>
+    <string name="btn_add_location">Eigenen Standort hinzufügen</string>
+    <string name="btn_sync_now">Jetzt synchronisieren</string>
+    <string name="btn_clear_expiry">Datum löschen</string>
+
+    <!-- Search & Sort -->
+    <string name="hint_search">Artikel suchen…</string>
+    <string name="sort_by">Sortieren nach</string>
+    <string name="sort_expiry_date">Ablaufdatum</string>
+    <string name="sort_date_added">Hinzugefügt am</string>
+    <string name="sort_name">Name</string>
+    <string name="sort_quantity">Menge</string>
+
+    <!-- Status Badges & Notifications -->
+    <string name="status_fresh">Frisch</string>
+    <string name="status_expiring_soon">Läuft bald ab</string>
+    <string name="status_expired">Abgelaufen</string>
+    <string name="status_freezer_warning">Im Gefrierfach > %1$d Mon.</string>
+    <string name="status_freezer_alert">Im Gefrierfach > %1$d Mon.</string>
+    <string name="no_expiry_set">Kein Ablaufdatum</string>
+    <string name="notification_channel_name">Lebensmittelablauf &amp; Gefrierschrank-Warnungen</string>
+    <string name="notification_channel_desc">Benachrichtigungen für ablaufende Artikel oder Gefrierschrank-Schwellenwerte</string>
+
+    <!-- Settings -->
+    <string name="title_sync_settings">JSONBin Cloud-Synchronisation</string>
+    <string name="label_api_key">JSONBin Schlüssel ($2a$10$…)</string>
+    <string name="label_bin_id">Bin-ID</string>
+    <string name="status_sync_idle">Noch nicht synchronisiert</string>
+    <string name="status_syncing">Synchronisiere mit JSONBin…</string>
+    <string name="status_sync_success">Erfolgreich synchronisiert</string>
+    <string name="status_sync_failed">Synchronisation fehlgeschlagen: %1$s</string>
+    <string name="title_threshold_settings">Gefrierschrank Schwellenwerte</string>
+    <string name="label_yellow_threshold">Gelbe Warnung (Monate)</string>
+    <string name="label_red_threshold">Rote Warnung (Monate)</string>
+    <string name="title_locations_settings">Standorte verwalten</string>
+
+    <!-- Scanner & Messages -->
+    <string name="msg_camera_permission_required">Kamera-Berechtigung ist erforderlich, um Barcodes zu scannen.</string>
+    <string name="btn_grant_permission">Berechtigung erteilen</string>
+    <string name="msg_point_at_barcode">Richte die Kamera auf einen Produkt-Barcode</string>
+    <string name="msg_product_found">Produkt gefunden: %1$s</string>
+    <string name="msg_product_not_found">Barcode gescanned. Produkt nicht in Datenbank gefunden.</string>
+    <string name="msg_no_items">Keine Artikel an diesem Standort gefunden.</string>
+</resources>
