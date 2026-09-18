@@ -39,27 +39,10 @@
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- **Android Studio**: Android Studio Ladybug (2024.2.1) or newer
-- **Android SDK**: `compileSdk = 37`, `minSdk = 26` (Android 8.0+)
-- **JDK**: Java 17
-
-### Building the Project
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/Consumely.git
-   cd Consumely
-   ```
-
-2. **Build the Debug APK**:
+1. Clone the repository and open the project in Android Studio.
+2. Build and run the app or execute Gradle commands:
    ```bash
    ./gradlew assembleDebug
-   ```
-
-3. **Run Unit Tests**:
-   ```bash
-   ./gradlew testDebugUnitTest
    ```
 
 ---
