@@ -50,8 +50,29 @@ class AddEditViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun resetState() {
+        _uiState.value = AddEditUiState(
+            id = UUID.randomUUID().toString(),
+            name = "",
+            locationId = if (_uiState.value.locations.isNotEmpty()) _uiState.value.locations.first().id else AppDatabase.PANTRY_ID,
+            quantity = 1,
+            unit = null,
+            dateAdded = System.currentTimeMillis(),
+            expiryDate = null,
+            barcode = null,
+            locations = _uiState.value.locations,
+            isEditMode = false,
+            isLoadingBarcode = false,
+            barcodeError = null,
+            isSaved = false
+        )
+    }
+
     fun loadItem(itemId: String?) {
-        if (itemId.isNullOrBlank()) return
+        if (itemId.isNullOrBlank()) {
+            resetState()
+            return
+        }
         viewModelScope.launch {
             val item = db.itemDao().getItemById(itemId)
             if (item != null) {
@@ -64,7 +85,8 @@ class AddEditViewModel(application: Application) : AndroidViewModel(application)
                     dateAdded = item.dateAdded,
                     expiryDate = item.expiryDate,
                     barcode = item.barcode,
-                    isEditMode = true
+                    isEditMode = true,
+                    isSaved = false
                 )
             }
         }

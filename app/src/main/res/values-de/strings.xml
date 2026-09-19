@@ -12,13 +12,13 @@
     <string name="location_all">Alle</string>
     <string name="location_pantry">Vorratskammer</string>
     <string name="location_fridge">Kühlschrank</string>
-    <string name="location_freezer">Gefrierschrank</string>
+    <string name="location_freezer">Gefriertruhe</string>
     <string name="location_basement">Keller</string>
 
     <!-- Location Types -->
     <string name="location_type_pantry">Vorratskammer / Raumtemp.</string>
     <string name="location_type_fridge">Kühlschrank</string>
-    <string name="location_type_freezer">Gefrierschrank</string>
+    <string name="location_type_freezer">Gefriertruhe</string>
 
     <!-- Item Fields -->
     <string name="label_item_name">Artikelname</string>

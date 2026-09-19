@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.consumely.R
@@ -205,34 +206,44 @@ fun ItemCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onCardClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            // Left Column: Item Name, Status Badge, Subtitle & Expiry
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         text = item.name,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
 
                     StatusBadge(status = status)
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
-
                 Text(
                     text = "${location.getDisplayName()} • ${stringResource(R.string.label_date_added)}: ${formatDate(item.dateAdded)}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 item.expiryDate?.let { exp ->
@@ -240,12 +251,14 @@ fun ItemCard(
                         text = "${stringResource(R.string.label_expiry_date)}: ${formatDate(exp)}",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = if (exp < System.currentTimeMillis()) Color.Red else MaterialTheme.colorScheme.onSurface
+                        color = if (exp < System.currentTimeMillis()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
 
-            // Quantity Stepper
+            // Right Row: Quantity Stepper & Delete Button
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -273,12 +286,12 @@ fun ItemCard(
 
                 IconButton(
                     onClick = onDelete,
-                    modifier = Modifier.padding(start = 4.dp)
+                    modifier = Modifier.size(32.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = stringResource(R.string.btn_delete),
-                        tint = MaterialTheme.colorScheme.error
+                        tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
                     )
                 }
             }
