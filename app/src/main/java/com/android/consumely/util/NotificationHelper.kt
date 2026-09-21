@@ -12,8 +12,8 @@ import androidx.core.content.ContextCompat
 import com.android.consumely.R
 import com.android.consumely.data.local.AppDatabase
 import com.android.consumely.data.local.preferences.SettingsManager
-import com.android.consumely.ui.inventory.ItemStatusInfo
-import com.android.consumely.ui.inventory.calculateItemStatus
+import com.android.consumely.ui.inventory.ItemStatusGroup
+import com.android.consumely.ui.inventory.calculateItemStatusGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -57,7 +57,7 @@ object NotificationHelper {
             val location = itemWithLoc.location
 
             if (!item.hasNotifiedExpiry) {
-                val status = calculateItemStatus(
+                val statusGroup = calculateItemStatusGroup(
                     expiryDate = item.expiryDate,
                     dateAdded = item.dateAdded,
                     locationType = location.type,
@@ -65,16 +65,14 @@ object NotificationHelper {
                     redMonths = redMonths
                 )
 
-                if (status is ItemStatusInfo.ExpiringSoon || status is ItemStatusInfo.Expired || status is ItemStatusInfo.FreezerWarning || status is ItemStatusInfo.FreezerAlert) {
-                    val title = item.name
-                    val message = when (status) {
-                        is ItemStatusInfo.ExpiringSoon -> context.getString(R.string.status_expiring_soon)
-                        is ItemStatusInfo.Expired -> context.getString(R.string.status_expired)
-                        is ItemStatusInfo.FreezerWarning -> context.getString(R.string.status_freezer_warning, yellowMonths)
-                        is ItemStatusInfo.FreezerAlert -> context.getString(R.string.status_freezer_alert, redMonths)
-                        else -> ""
-                    }
+                val message = when (statusGroup) {
+                    ItemStatusGroup.EXPIRED -> context.getString(R.string.status_expired)
+                    ItemStatusGroup.EXPIRING_SOON -> context.getString(R.string.status_expiring_soon)
+                    ItemStatusGroup.FRESH -> null
+                }
 
+                if (message != null) {
+                    val title = item.name
                     val builder = NotificationCompat.Builder(context, CHANNEL_ID)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(title)

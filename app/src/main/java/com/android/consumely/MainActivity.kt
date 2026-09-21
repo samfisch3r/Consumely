@@ -1,9 +1,14 @@
 package com.android.consumely
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,8 +19,10 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
@@ -28,6 +35,10 @@ import com.android.consumely.ui.scanner.BarcodeScannerScreen
 import com.android.consumely.ui.settings.SettingsScreen
 import com.android.consumely.ui.settings.SettingsViewModel
 import com.android.consumely.ui.theme.ConsumelyTheme
+import com.android.consumely.util.NotificationHelper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +46,31 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ConsumelyTheme {
+                RequestNotificationPermissionEffect()
                 MainAppScreen()
+            }
+        }
+    }
+}
+
+@Composable
+fun RequestNotificationPermissionEffect() {
+    val context = LocalContext.current
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+            onResult = { isGranted ->
+                if (isGranted) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        NotificationHelper.checkAndNotifyExpiringItems(context)
+                    }
+                }
+            }
+        )
+
+        LaunchedEffect(Unit) {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }

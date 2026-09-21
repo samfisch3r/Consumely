@@ -80,8 +80,15 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
 
                 val sorted = when (sort) {
                     SortOrder.EXPIRY_DATE -> filteredByQuery.sortedWith(
-                        compareBy<ItemWithLocation> { it.item.expiryDate ?: Long.MAX_VALUE }
-                            .thenByDescending { it.item.dateAdded }
+                        compareBy<ItemWithLocation> {
+                            calculateItemStatusGroup(
+                                expiryDate = it.item.expiryDate,
+                                dateAdded = it.item.dateAdded,
+                                locationType = it.location.type,
+                                yellowMonths = settingsManager.yellowThresholdMonths,
+                                redMonths = settingsManager.redThresholdMonths
+                            ).priority
+                        }.thenBy { it.item.name.lowercase() }
                     )
                     SortOrder.DATE_ADDED -> filteredByQuery.sortedByDescending { it.item.dateAdded }
                     SortOrder.NAME -> filteredByQuery.sortedBy { it.item.name.lowercase() }

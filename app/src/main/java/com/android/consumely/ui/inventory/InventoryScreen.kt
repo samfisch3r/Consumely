@@ -1,6 +1,7 @@
 package com.android.consumely.ui.inventory
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -198,15 +199,19 @@ fun ItemCard(
     val item = itemWithLoc.item
     val location = itemWithLoc.location
 
-    val status = remember(item, location, yellowThresholdMonths, redThresholdMonths) {
-        calculateItemStatus(item.expiryDate, item.dateAdded, location.type, yellowThresholdMonths, redThresholdMonths)
+    val statusGroup = remember(item, location, yellowThresholdMonths, redThresholdMonths) {
+        calculateItemStatusGroup(item.expiryDate, item.dateAdded, location.type, yellowThresholdMonths, redThresholdMonths)
     }
+
+    val isDark = isSystemInDarkTheme()
+    val cardBgColor = if (isDark) statusGroup.containerColorDark else statusGroup.containerColorLight
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onCardClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = cardBgColor),
         shape = RoundedCornerShape(16.dp)
     ) {
         Row(
@@ -216,27 +221,18 @@ fun ItemCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Left Column: Item Name, Status Badge, Subtitle & Expiry
+            // Left Column: Item Name, Location & Dates
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = item.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f, fill = false)
-                    )
-
-                    StatusBadge(status = status)
-                }
+                Text(
+                    text = item.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
 
                 Text(
                     text = "${location.getDisplayName()} • ${stringResource(R.string.label_date_added)}: ${formatDate(item.dateAdded)}",
@@ -299,29 +295,43 @@ fun ItemCard(
     }
 }
 
-sealed class ItemStatusInfo(val textRes: Int, val formatArg: Int? = null, val color: Color, val containerColor: Color) {
-    class Fresh : ItemStatusInfo(R.string.status_fresh, null, Color(0xFF1B5E20), Color(0xFFE8F5E9))
-    class ExpiringSoon : ItemStatusInfo(R.string.status_expiring_soon, null, Color(0xFFE65100), Color(0xFFFFF3E0))
-    class Expired : ItemStatusInfo(R.string.status_expired, null, Color(0xFFB71C1C), Color(0xFFFFEBEE))
-    class FreezerWarning(months: Int) : ItemStatusInfo(R.string.status_freezer_warning, months, Color(0xFFF57F17), Color(0xFFFFFDE7))
-    class FreezerAlert(months: Int) : ItemStatusInfo(R.string.status_freezer_alert, months, Color(0xFFB71C1C), Color(0xFFFFEBEE))
+enum class ItemStatusGroup(
+    val priority: Int,
+    val containerColorLight: Color,
+    val containerColorDark: Color
+) {
+    EXPIRED(
+        priority = 0,
+        containerColorLight = Color(0xFFFFEBEE), // Soft Red
+        containerColorDark = Color(0xFF5A2B2B)   // Lighter soft red for dark mode
+    ),
+    EXPIRING_SOON(
+        priority = 1,
+        containerColorLight = Color(0xFFFFF8E1), // Soft Yellow / Amber
+        containerColorDark = Color(0xFF52441E)   // Lighter soft amber for dark mode
+    ),
+    FRESH(
+        priority = 2,
+        containerColorLight = Color(0xFFE8F5E9), // Soft Green
+        containerColorDark = Color(0xFF29452E)   // Lighter soft green for dark mode
+    )
 }
 
-fun calculateItemStatus(
+fun calculateItemStatusGroup(
     expiryDate: Long?,
     dateAdded: Long,
     locationType: LocationType,
     yellowMonths: Int,
     redMonths: Int
-): ItemStatusInfo {
+): ItemStatusGroup {
     val now = System.currentTimeMillis()
 
     if (expiryDate != null) {
         val daysRemaining = TimeUnit.MILLISECONDS.toDays(expiryDate - now)
         return when {
-            daysRemaining < 0 -> ItemStatusInfo.Expired()
-            daysRemaining <= 3 -> ItemStatusInfo.ExpiringSoon()
-            else -> ItemStatusInfo.Fresh()
+            daysRemaining < 0 -> ItemStatusGroup.EXPIRED
+            daysRemaining <= 3 -> ItemStatusGroup.EXPIRING_SOON
+            else -> ItemStatusGroup.FRESH
         }
     }
 
@@ -331,35 +341,13 @@ fun calculateItemStatus(
         val redDays = redMonths * 30L
 
         return when {
-            daysInFreezer >= redDays -> ItemStatusInfo.FreezerAlert(redMonths)
-            daysInFreezer >= yellowDays -> ItemStatusInfo.FreezerWarning(yellowMonths)
-            else -> ItemStatusInfo.Fresh()
+            daysInFreezer >= redDays -> ItemStatusGroup.EXPIRED
+            daysInFreezer >= yellowDays -> ItemStatusGroup.EXPIRING_SOON
+            else -> ItemStatusGroup.FRESH
         }
     }
 
-    return ItemStatusInfo.Fresh()
-}
-
-@Composable
-fun StatusBadge(status: ItemStatusInfo) {
-    val text = if (status.formatArg != null) {
-        stringResource(status.textRes, status.formatArg)
-    } else {
-        stringResource(status.textRes)
-    }
-
-    Surface(
-        color = status.containerColor,
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Text(
-            text = text,
-            color = status.color,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-        )
-    }
+    return ItemStatusGroup.FRESH
 }
 
 fun formatDate(millis: Long): String {
