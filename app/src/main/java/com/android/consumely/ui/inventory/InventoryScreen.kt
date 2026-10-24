@@ -238,7 +238,7 @@ fun ItemCard(
                     text = "${location.getDisplayName()} • ${stringResource(R.string.label_date_added)}: ${formatDate(item.dateAdded)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
 

@@ -26,7 +26,7 @@
     <string name="label_quantity">Menge</string>
     <string name="label_expiry_date">Ablaufdatum</string>
     <string name="label_optional_expiry">Ablaufdatum (Optional)</string>
-    <string name="label_date_added">Hinzugefügt am</string>
+    <string name="label_date_added">Hinzugefügt</string>
     <string name="label_barcode">Barcode</string>
 
     <!-- Actions -->
